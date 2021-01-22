@@ -14,9 +14,13 @@ import { Review } from "./podcast/entities/review.entity";
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "sqlite",
-      database: "db.sqlite3",
-      synchronize: false,
+      type: process.env.NODE_ENV === "production" ? "postgres" : "sqlite",
+      ...(process.env.NODE_ENV !== "production"
+        ? { database: "db.sqlite3" }
+        : {
+            url: process.env.DATABASE_URL,
+          }),
+      synchronize: true,
       logging: process.env.NODE_ENV !== "test",
       entities: [Podcast, Episode, User, Review],
     }),
