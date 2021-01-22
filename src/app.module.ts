@@ -17,12 +17,19 @@ import { Review } from "./podcast/entities/review.entity";
       ...(process.env.NODE_ENV === "production"
         ? {
             type: "postgres",
-            database: process.env.DB_NAME,
-            host: process.env.DB_HOST,
-            username: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            port: +process.env.DB_PORT,
-            ssl: { rejectUnauthorized: false },
+            ...(process.env.DATABASE_URL
+              ? {
+                  url: process.env.DATABASE_URL,
+                  ssl: { rejectUnauthorized: false },
+                }
+              : {
+                  database: process.env.DB_NAME,
+                  host: process.env.DB_HOST,
+                  username: process.env.DB_USER,
+                  password: process.env.DB_PASSWORD,
+                  port: +process.env.DB_PORT,
+                  ssl: { rejectUnauthorized: false },
+                }),
           }
         : { type: "sqlite", database: "db.sqlite3" }),
       synchronize: false,
