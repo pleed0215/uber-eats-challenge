@@ -26,7 +26,7 @@ import { Review } from "./podcast/entities/review.entity";
           }
         : { type: "sqlite", database: "db.sqlite3" }),
       synchronize: false,
-      logging: process.env.NODE_ENV !== "test",
+      logging: process.env.NODE_ENV !== "production",
       entities: [Podcast, Episode, User, Review],
     }),
     GraphQLModule.forRoot({
