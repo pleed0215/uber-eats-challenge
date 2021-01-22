@@ -25,7 +25,7 @@ import { Review } from "./podcast/entities/review.entity";
             ssl: { rejectUnauthorized: false },
           }
         : { type: "sqlite", database: "db.sqlite3" }),
-      synchronize: true,
+      synchronize: false,
       logging: process.env.NODE_ENV !== "test",
       entities: [Podcast, Episode, User, Review],
     }),
@@ -35,6 +35,7 @@ import { Review } from "./podcast/entities/review.entity";
         return { user: req["user"] };
       },
       playground: true,
+      introspection: true,
     }),
     JwtModule.forRoot({
       privateKey: "8mMJe5dMGORyoRPLvngA8U4aLTF3WasX",
