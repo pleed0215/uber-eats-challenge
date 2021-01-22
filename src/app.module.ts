@@ -18,7 +18,11 @@ import { Review } from "./podcast/entities/review.entity";
       ...(process.env.NODE_ENV !== "production"
         ? { database: "db.sqlite3" }
         : {
-            url: process.env.DATABASE_URL,
+            database: process.env.DB_NAME,
+            host: process.env.DB_HOST,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            port: +process.env.DB_PORT,
           }),
       synchronize: true,
       logging: process.env.NODE_ENV !== "test",
