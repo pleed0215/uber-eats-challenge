@@ -14,16 +14,17 @@ import { Review } from "./podcast/entities/review.entity";
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: process.env.NODE_ENV === "production" ? "postgres" : "sqlite",
-      ...(process.env.NODE_ENV !== "production"
-        ? { database: "db.sqlite3" }
-        : {
+      ...(process.env.NODE_ENV === "production"
+        ? {
+            type: "postgres",
             database: process.env.DB_NAME,
             host: process.env.DB_HOST,
             username: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             port: +process.env.DB_PORT,
-          }),
+            ssl: { rejectUnauthorized: false },
+          }
+        : { type: "sqlite", database: "db.sqlite3" }),
       synchronize: true,
       logging: process.env.NODE_ENV !== "test",
       entities: [Podcast, Episode, User, Review],
@@ -33,6 +34,7 @@ import { Review } from "./podcast/entities/review.entity";
       context: ({ req }) => {
         return { user: req["user"] };
       },
+      playground: true,
     }),
     JwtModule.forRoot({
       privateKey: "8mMJe5dMGORyoRPLvngA8U4aLTF3WasX",
