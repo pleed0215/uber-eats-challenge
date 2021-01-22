@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import {
   CreateEpisodeInput,
-  CreateEpisodeOutput
+  CreateEpisodeOutput,
 } from "./dtos/create-episode.dto";
 import {
   CreatePodcastInput,
-  CreatePodcastOutput
+  CreatePodcastOutput,
 } from "./dtos/create-podcast.dto";
 import { UpdateEpisodeInput } from "./dtos/update-episode.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
@@ -18,34 +18,34 @@ import {
   EpisodesOutput,
   EpisodesSearchInput,
   GetAllPodcastsOutput,
-  GetEpisodeOutput
+  GetEpisodeOutput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
 import { User } from "src/users/entities/user.entity";
 import {
   SearchPodcastInput,
-  SearchPodcastOutput
+  SearchPodcastOutput,
 } from "./dtos/search-podcast.dto";
 import {
   ReviewPodcastInput,
   ReviewPodcastOutput,
   SeePodcastReviewsInput,
-  SeePodcastReviewsOutput
+  SeePodcastReviewsOutput,
 } from "./dtos/review-podcast.dto";
 
 import { Review } from "./entities/review.entity";
 import {
   ToggleSubscriptionInput,
-  ToggleSubscriptionOutput
+  ToggleSubscriptionOutput,
 } from "./dtos/toggle-subscription.dto";
 import {
   SeeSubscriptionInput,
-  SeeSubscriptionOutput
+  SeeSubscriptionOutput,
 } from "./dtos/see-subscriptions.dto";
 import {
   MarkEpisodeAsPlayedInput,
-  MarkEpisodeAsPlayedOutput
+  MarkEpisodeAsPlayedOutput,
 } from "./dtos/mark-as-played.dto";
 
 @Injectable()
@@ -67,7 +67,7 @@ export class PodcastsService {
     try {
       if (isEpisode) {
         const episode = await this.episodeRepository.findOneOrFail(artId, {
-          relations: ["podcast", "podcast.host"]
+          relations: ["podcast", "podcast.host"],
         });
         return user.id === episode.podcast.hostId;
       } else {
@@ -81,11 +81,11 @@ export class PodcastsService {
 
   private readonly InternalServerErrorOutput = {
     ok: false,
-    error: "Internal server error occurred."
+    error: "Internal server error occurred.",
   };
   private readonly YouAreNotOwnerErrorOutput = {
     ok: false,
-    error: "You are not owner of this"
+    error: "You are not owner of this",
   };
 
   async getAllPodcasts(): Promise<GetAllPodcastsOutput> {
@@ -93,7 +93,7 @@ export class PodcastsService {
       const podcasts = await this.podcastRepository.find();
       return {
         ok: true,
-        podcasts
+        podcasts,
       };
     } catch (e) {
       return this.InternalServerErrorOutput;
@@ -108,13 +108,13 @@ export class PodcastsService {
       const newPodcast = this.podcastRepository.create({
         title,
         category,
-        host
+        host,
       });
       const saved = await this.podcastRepository.save(newPodcast);
       console.log(saved);
       return {
         ok: true,
-        id: saved.id
+        id: saved.id,
       };
     } catch (e) {
       return this.InternalServerErrorOutput;
@@ -130,12 +130,12 @@ export class PodcastsService {
       if (!podcast) {
         return {
           ok: false,
-          error: `Podcast with id ${id} not found`
+          error: `Podcast with id ${id} not found`,
         };
       }
       return {
         ok: true,
-        podcast
+        podcast,
       };
     } catch (e) {
       return this.InternalServerErrorOutput;
@@ -180,7 +180,7 @@ export class PodcastsService {
       ) {
         return {
           ok: false,
-          error: "Rating must be between 1 and 5."
+          error: "Rating must be between 1 and 5.",
         };
       } else {
         const updatedPodcast: Podcast = { ...podcast, ...payload };
@@ -199,13 +199,13 @@ export class PodcastsService {
     }
     return {
       ok: true,
-      episodes: podcast.episodes
+      episodes: podcast.episodes,
     };
   }
 
   async getEpisode({
     podcastId,
-    episodeId
+    episodeId,
   }: EpisodesSearchInput): Promise<GetEpisodeOutput> {
     const { episodes, ok, error } = await this.getEpisodes(podcastId);
     if (!ok) {
@@ -215,19 +215,19 @@ export class PodcastsService {
     if (!episode) {
       return {
         ok: false,
-        error: `Episode with id ${episodeId} not found in podcast with id ${podcastId}`
+        error: `Episode with id ${episodeId} not found in podcast with id ${podcastId}`,
       };
     }
     return {
       ok: true,
-      episode
+      episode,
     };
   }
 
   async createEpisode({
     podcastId,
     title,
-    category
+    category,
   }: CreateEpisodeInput): Promise<CreateEpisodeOutput> {
     try {
       const { podcast, ok, error } = await this.getPodcast(podcastId);
@@ -239,7 +239,7 @@ export class PodcastsService {
       const { id } = await this.episodeRepository.save(newEpisode);
       return {
         ok: true,
-        id
+        id,
       };
     } catch (e) {
       return this.InternalServerErrorOutput;
@@ -253,7 +253,7 @@ export class PodcastsService {
     try {
       const { episode, error, ok } = await this.getEpisode({
         podcastId,
-        episodeId
+        episodeId,
       });
 
       if (!ok) {
@@ -277,7 +277,7 @@ export class PodcastsService {
     try {
       const { episode, ok, error } = await this.getEpisode({
         podcastId,
-        episodeId
+        episodeId,
       });
       if (!ok) {
         return { ok, error };
@@ -296,7 +296,7 @@ export class PodcastsService {
   async searchPodcastByTitle({
     title,
     page,
-    pageSize
+    pageSize,
   }: SearchPodcastInput): Promise<SearchPodcastOutput> {
     try {
       // 비효율적???
@@ -304,7 +304,12 @@ export class PodcastsService {
         .createQueryBuilder("podcast")
         .leftJoinAndSelect("podcast.host", "host")
         .leftJoinAndSelect("podcast.episodes", "episodes")
-        .where("podcast.title LIKE :title", { title: `%${title}%` });
+        .where(
+          `podcast.title ${
+            process.env.NODE_ENV === "production" ? "ILIKE" : "LIKE"
+          } :title`,
+          { title: `%${title}%` }
+        );
 
       const totalCount = await query.getCount();
       const totalPage = Math.ceil(totalCount / pageSize);
@@ -333,13 +338,13 @@ export class PodcastsService {
         totalPage,
         pageSize,
         currentCount,
-        results
+        results,
         //results: results.slice(startIndex, endIndex),
       };
     } catch (error) {
       return {
         ok: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -350,7 +355,7 @@ export class PodcastsService {
   ): Promise<ReviewPodcastOutput> {
     try {
       const podcast = await this.podcastRepository.findOneOrFail(podcastId, {
-        relations: ["reviews", "reviews.reviewer"]
+        relations: ["reviews", "reviews.reviewer"],
       });
 
       if (
@@ -361,7 +366,7 @@ export class PodcastsService {
             content,
             rating,
             reviewer,
-            podcast
+            podcast,
           })
         );
       } else {
@@ -369,12 +374,12 @@ export class PodcastsService {
       }
 
       return {
-        ok: true
+        ok: true,
       };
     } catch (error) {
       return {
         ok: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -385,7 +390,7 @@ export class PodcastsService {
   ): Promise<ToggleSubscriptionOutput> {
     try {
       const podcast = await this.podcastRepository.findOneOrFail(podcastId, {
-        relations: ["listeners"]
+        relations: ["listeners"],
       });
       let result;
 
@@ -404,12 +409,12 @@ export class PodcastsService {
       }
       return {
         ok: true,
-        result
+        result,
       };
     } catch (error) {
       return {
         ok: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -436,12 +441,12 @@ export class PodcastsService {
         currentPage: page,
         totalPage,
         totalCount,
-        pageSize
+        pageSize,
       };
     } catch (error) {
       return {
         ok: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -449,7 +454,7 @@ export class PodcastsService {
   async seePodcastReviews({
     podcastId,
     page,
-    pageSize
+    pageSize,
   }: SeePodcastReviewsInput): Promise<SeePodcastReviewsOutput> {
     try {
       const query = await this.reviewRepository
@@ -471,12 +476,12 @@ export class PodcastsService {
         totalPage,
         currentCount,
         currentPage: page,
-        reviews
+        reviews,
       };
     } catch (error) {
       return {
         ok: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -487,7 +492,7 @@ export class PodcastsService {
   ): Promise<MarkEpisodeAsPlayedOutput> {
     try {
       const episode = await this.episodeRepository.findOneOrFail(episodeId, {
-        relations: ["seenUser"]
+        relations: ["seenUser"],
       });
       let count;
 
@@ -498,7 +503,7 @@ export class PodcastsService {
 
         return {
           ok: true,
-          count
+          count,
         };
       } else {
         throw Error("Watched before");
@@ -506,7 +511,7 @@ export class PodcastsService {
     } catch (error) {
       return {
         ok: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
