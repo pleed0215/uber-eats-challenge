@@ -28,12 +28,22 @@ export class Podcast extends CoreEntity {
   @IsString()
   category: string;
 
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  description: string;
+
   @Column({ default: 0 })
   @Field((type) => Number)
   @IsNumber()
   @Min(0)
   @Max(5)
   rating: number;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  thumbnail?: string;
 
   @OneToMany(() => Episode, (episode) => episode.podcast)
   @Field((type) => [Episode])
