@@ -462,7 +462,7 @@ export class PodcastsService {
     try {
       const query = this.episodeRepository
         .createQueryBuilder("episode")
-        .leftJoinAndSelect("episodes.podcast", "podcast")
+        .leftJoinAndSelect("episode.podcast", "podcast")
         .leftJoinAndSelect("podcast.host", "host");
 
       const totalCount = await query.getCount();
