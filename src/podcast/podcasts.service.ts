@@ -651,9 +651,7 @@ export class PodcastsService {
       if (podcasts.length < 1) throw Error("No podcasts. Cannot Seed");
 
       for (const podcast of podcasts) {
-        const review = this.reviewRepository.create({
-          podcast: pod,
-        });
+        const review = this.reviewRepository.create({});
       }
     } catch (e) {
       return {
