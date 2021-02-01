@@ -50,6 +50,7 @@ import {
 import {
   SeedPodcastAndEpisodeInput,
   SeedPodcastAndEpisodeOutput,
+  SeedReviewsOutput,
 } from "./dtos/fake.dto";
 
 import * as faker from "faker";
@@ -632,6 +633,28 @@ export class PodcastsService {
       return {
         ok: true,
       };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async seedReviews(): Promise<SeedReviewsOutput> {
+    try {
+      const listeners = await this.userRepository.find({
+        where: { role: UserRole.Listener },
+      });
+      const podcasts = await this.podcastRepository.find({});
+      if (listeners.length < 1) throw Error("No listeners. Cannot Seed.");
+      if (podcasts.length < 1) throw Error("No podcasts. Cannot Seed");
+
+      for (const podcast of podcasts) {
+        const review = this.reviewRepository.create({
+          podcast: pod,
+        });
+      }
     } catch (e) {
       return {
         ok: false,

@@ -15,3 +15,6 @@ export class SeedPodcastAndEpisodeInput {
 
 @ObjectType()
 export class SeedPodcastAndEpisodeOutput extends CoreOutput {}
+
+@ObjectType()
+export class SeedReviewsOutput extends CoreOutput {}
