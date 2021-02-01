@@ -1,22 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
+import { Injectable } from "@nestjs/common";
+import { User, UserRole } from "./entities/user.entity";
 import {
   CreateAccountInput,
   CreateAccountOutput,
-} from './dtos/create-account.dto';
-import { LoginInput, LoginOutput } from './dtos/login.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { JwtService } from '../jwt/jwt.service';
-import { UserProfileOutput } from './dtos/user-profile.dto';
-import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
+} from "./dtos/create-account.dto";
+import { LoginInput, LoginOutput } from "./dtos/login.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { JwtService } from "../jwt/jwt.service";
+import { UserProfileOutput } from "./dtos/user-profile.dto";
+import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
+import { SeedFakeUsersInput, SeedFakeUsersOutput } from "./dtos/fake.dto";
+
+import * as faker from "faker";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async createAccount({
@@ -43,7 +46,7 @@ export class UsersService {
     } catch {
       return {
         ok: false,
-        error: 'Could not create account',
+        error: "Could not create account",
       };
     }
   }
@@ -51,16 +54,16 @@ export class UsersService {
     try {
       const user = await this.users.findOne(
         { email },
-        { select: ['id', 'password'] },
+        { select: ["id", "password"] }
       );
       if (!user) {
-        return { ok: false, error: 'User not found' };
+        return { ok: false, error: "User not found" };
       }
       const passwordCorrect = await user.checkPassword(password);
       if (!passwordCorrect) {
         return {
           ok: false,
-          error: 'Wrong password',
+          error: "Wrong password",
         };
       }
 
@@ -88,14 +91,14 @@ export class UsersService {
     } catch (error) {
       return {
         ok: false,
-        error: 'User Not Found',
+        error: "User Not Found",
       };
     }
   }
 
   async editProfile(
     userId: number,
-    { email, password }: EditProfileInput,
+    { email, password }: EditProfileInput
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOneOrFail(userId);
@@ -110,7 +113,40 @@ export class UsersService {
     } catch (error) {
       return {
         ok: false,
-        error: 'Could not update profile',
+        error: "Could not update profile",
+      };
+    }
+  }
+
+  async seedFakeUsers({
+    numUsers,
+  }: SeedFakeUsersInput): Promise<SeedFakeUsersOutput> {
+    try {
+      const willBeCreated: Array<User> = [];
+      const basePortraitUrl =
+        "https://ubereats-challenge.s3.ap-northeast-2.amazonaws.com/";
+      for (let i = 0; i < numUsers; i++) {
+        willBeCreated.push(
+          this.users.create({
+            email: faker.internet.email(),
+            name: faker.name.findName(),
+            password: "testpassword",
+            role: faker.random.arrayElement([UserRole.Host, UserRole.Listener]),
+            portrait: `${basePortraitUrl}portrait${faker.random.number({
+              min: 1,
+              max: 20,
+            })}.jpg`,
+          })
+        );
+      }
+      await this.users.save(willBeCreated);
+      return {
+        ok: true,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
       };
     }
   }

@@ -22,7 +22,7 @@ import {
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
-import { User } from "src/users/entities/user.entity";
+import { User, UserRole } from "src/users/entities/user.entity";
 import {
   SearchPodcastInput,
   SearchPodcastOutput,
@@ -47,6 +47,13 @@ import {
   MarkEpisodeAsPlayedInput,
   MarkEpisodeAsPlayedOutput,
 } from "./dtos/mark-as-played.dto";
+import {
+  SeedPodcastAndEpisodeInput,
+  SeedPodcastAndEpisodeOutput,
+} from "./dtos/fake.dto";
+
+import * as faker from "faker";
+import { min } from "class-validator";
 
 @Injectable()
 export class PodcastsService {
@@ -56,7 +63,9 @@ export class PodcastsService {
     @InjectRepository(Episode)
     private readonly episodeRepository: Repository<Episode>,
     @InjectRepository(Review)
-    private readonly reviewRepository: Repository<Review>
+    private readonly reviewRepository: Repository<Review>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   async areYouCreator(
@@ -512,6 +521,121 @@ export class PodcastsService {
       return {
         ok: false,
         error: error.message,
+      };
+    }
+  }
+
+  async seedPodcastAndEpisode({
+    numPodcast,
+    minEpisode,
+    maxEpisode,
+  }: SeedPodcastAndEpisodeInput): Promise<SeedPodcastAndEpisodeOutput> {
+    try {
+      const category = [
+        "Book",
+        "Design",
+        "Fashion",
+        "Food",
+        "Careers",
+        "Management",
+        "Marketing",
+        "Non-Profit",
+        "Comedy",
+        "Stand-up",
+        "Courses",
+        "Education",
+        "Howto",
+        "Language",
+        "Fiction",
+        "Drama",
+        "History",
+        "Health&Fitness",
+        "Medicine",
+        "Mental Health",
+        "Sexuality",
+        "Education for kids",
+        "Parenting",
+        "Music",
+        "Animation",
+        "Video Games",
+        "Politics",
+        "Tech",
+        "Sports",
+        "Science",
+        "Nature",
+        "Physics",
+        "Social Science",
+        "Baseball",
+        "Basketball",
+        "Film History",
+        "Film Reviews",
+        "Technology",
+      ];
+      const baseThumbUrl =
+        "https://ubereats-challenge.s3.ap-northeast-2.amazonaws.com/";
+      const hosts = await this.userRepository.find({
+        where: { role: UserRole.Host },
+      });
+      if (hosts.length < 1) throw Error("No hosts. Cannot seed podcast");
+      const listeners = await this.userRepository.find({
+        where: { role: UserRole.Listener },
+      });
+      if (listeners.length < 1)
+        throw Error("No Listeners. Cannot seed podcast");
+
+      const episodes: Array<Episode> = [];
+      for (let i = 0; i < numPodcast; i++) {
+        const podcast = await this.podcastRepository.save(
+          this.podcastRepository.create({
+            host: faker.random.arrayElement(hosts),
+            title: faker.lorem.words(faker.random.number({ min: 3, max: 10 })),
+            category: faker.random.arrayElement(category),
+            description: faker.lorem.paragraph(
+              faker.random.number({ min: 4, max: 8 })
+            ),
+            thumbnail: `${baseThumbUrl}podcast${faker.random.number({
+              min: 1,
+              max: 30,
+            })}.jpg`,
+            listeners: faker.random.arrayElements(
+              listeners,
+              faker.random.number({ min: 1, max: 50 })
+            ),
+          })
+        );
+
+        const numEpisode = faker.random.number({
+          min: minEpisode,
+          max: maxEpisode,
+        });
+        for (let j = 0; j < numEpisode; j++) {
+          await this.episodeRepository.save(
+            this.episodeRepository.create({
+              podcast,
+              title: faker.lorem.words(
+                faker.random.number({ min: 3, max: 10 })
+              ),
+              description: faker.lorem.paragraph(
+                faker.random.number({ min: 4, max: 8 })
+              ),
+              category: faker.random.arrayElement(category),
+              playLength: faker.random.number({ min: 30, max: 60 * 60 * 3 }),
+              seenUser: faker.random.arrayElements(
+                listeners,
+                faker.random.number({ min: 1, max: 30 })
+              ),
+            })
+          );
+        }
+      }
+
+      return {
+        ok: true,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
       };
     }
   }

@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql";
+import { ObjectType, Field, Int, InputType } from "@nestjs/graphql";
 import { IsNumber, IsString, Min } from "class-validator";
 import { User } from "src/users/entities/user.entity";
 import {
@@ -12,6 +12,7 @@ import {
 import { CoreEntity } from "./core.entity";
 import { Podcast } from "./podcast.entity";
 
+@InputType("EpisodeInputType", { isAbstract: true })
 @Entity()
 @ObjectType()
 export class Episode extends CoreEntity {

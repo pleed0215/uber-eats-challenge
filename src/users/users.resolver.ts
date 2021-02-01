@@ -4,7 +4,7 @@ import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 import {
   CreateAccountInput,
-  CreateAccountOutput
+  CreateAccountOutput,
 } from "./dtos/create-account.dto";
 import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { AuthUser } from "../auth/auth-user.decorator";
@@ -12,6 +12,7 @@ import { AuthGuard } from "../auth/auth.guard";
 import { UserProfileInput, UserProfileOutput } from "./dtos/user-profile.dto";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { Role } from "src/auth/role.decorator";
+import { SeedFakeUsersInput, SeedFakeUsersOutput } from "./dtos/fake.dto";
 
 @Resolver((of) => User)
 export class UsersResolver {
@@ -50,5 +51,13 @@ export class UsersResolver {
     @Args("input") editProfileInput: EditProfileInput
   ): Promise<EditProfileOutput> {
     return this.usersService.editProfile(authUser.id, editProfileInput);
+  }
+
+  @Role(["Any"])
+  @Mutation((returns) => SeedFakeUsersOutput)
+  seedFakeUsers(
+    @Args("input") input: SeedFakeUsersInput
+  ): Promise<SeedFakeUsersOutput> {
+    return this.usersService.seedFakeUsers(input);
   }
 }

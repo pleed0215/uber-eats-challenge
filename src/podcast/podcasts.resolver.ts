@@ -3,7 +3,7 @@ import { PodcastsService } from "./podcasts.service";
 import { Podcast } from "./entities/podcast.entity";
 import {
   CreatePodcastInput,
-  CreatePodcastOutput
+  CreatePodcastOutput,
 } from "./dtos/create-podcast.dto";
 import { CoreOutput } from "./dtos/output.dto";
 import {
@@ -11,39 +11,43 @@ import {
   PodcastOutput,
   EpisodesOutput,
   EpisodesSearchInput,
-  GetAllPodcastsOutput
+  GetAllPodcastsOutput,
 } from "./dtos/podcast.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
 import { Episode } from "./entities/episode.entity";
 import {
   CreateEpisodeInput,
-  CreateEpisodeOutput
+  CreateEpisodeOutput,
 } from "./dtos/create-episode.dto";
 import { UpdateEpisodeInput } from "./dtos/update-episode.dto";
 import { Role } from "src/auth/role.decorator";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import {
   SearchPodcastInput,
-  SearchPodcastOutput
+  SearchPodcastOutput,
 } from "./dtos/search-podcast.dto";
 import {
   ReviewPodcastInput,
   ReviewPodcastOutput,
   SeePodcastReviewsInput,
-  SeePodcastReviewsOutput
+  SeePodcastReviewsOutput,
 } from "./dtos/review-podcast.dto";
 import {
   ToggleSubscriptionInput,
-  ToggleSubscriptionOutput
+  ToggleSubscriptionOutput,
 } from "./dtos/toggle-subscription.dto";
 import {
   SeeSubscriptionInput,
-  SeeSubscriptionOutput
+  SeeSubscriptionOutput,
 } from "./dtos/see-subscriptions.dto";
 import {
   MarkEpisodeAsPlayedInput,
-  MarkEpisodeAsPlayedOutput
+  MarkEpisodeAsPlayedOutput,
 } from "./dtos/mark-as-played.dto";
+import {
+  SeedPodcastAndEpisodeInput,
+  SeedPodcastAndEpisodeOutput,
+} from "./dtos/fake.dto";
 
 @Resolver((of) => Podcast)
 export class PodcastsResolver {
@@ -176,5 +180,13 @@ export class EpisodeResolver {
     @Args("input") input: MarkEpisodeAsPlayedInput
   ): Promise<MarkEpisodeAsPlayedOutput> {
     return this.podcastService.markEpisodeAsPlayed(authUser, input);
+  }
+
+  @Role(["Any"])
+  @Mutation((returns) => SeedPodcastAndEpisodeOutput)
+  seedPodcastAndEpisode(
+    @Args("input") input: SeedPodcastAndEpisodeInput
+  ): Promise<SeedPodcastAndEpisodeOutput> {
+    return this.podcastService.seedPodcastAndEpisode(input);
   }
 }

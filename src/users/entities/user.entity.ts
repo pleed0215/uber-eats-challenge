@@ -36,6 +36,11 @@ export class User extends CoreEntity {
   @IsEmail()
   email: string;
 
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  name?: string;
+
   @Column()
   @Field((type) => String)
   @IsString()
@@ -66,6 +71,11 @@ export class User extends CoreEntity {
   })
   @Field((type) => [Review], { nullable: true })
   reviews: Review[];
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  portrait?: string;
 
   @BeforeInsert()
   @BeforeUpdate()
