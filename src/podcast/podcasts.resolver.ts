@@ -47,6 +47,7 @@ import {
 import {
   SeedPodcastAndEpisodeInput,
   SeedPodcastAndEpisodeOutput,
+  SeedReviewsOutput,
 } from "./dtos/fake.dto";
 
 @Resolver((of) => Podcast)
@@ -188,5 +189,11 @@ export class EpisodeResolver {
     @Args("input") input: SeedPodcastAndEpisodeInput
   ): Promise<SeedPodcastAndEpisodeOutput> {
     return this.podcastService.seedPodcastAndEpisode(input);
+  }
+
+  @Role(["Any"])
+  @Mutation((returns) => SeedReviewsOutput)
+  seedFakeReviews(): Promise<SeedReviewsOutput> {
+    return this.podcastService.seedReviews();
   }
 }

@@ -651,8 +651,24 @@ export class PodcastsService {
       if (podcasts.length < 1) throw Error("No podcasts. Cannot Seed");
 
       for (const podcast of podcasts) {
-        const review = this.reviewRepository.create({});
+        const randomReviewers = faker.random.arrayElements(listeners);
+        for (const reviewer of randomReviewers) {
+          await this.reviewRepository.save(
+            this.reviewRepository.create({
+              podcast,
+              reviewer,
+              content: faker.lorem.lines(
+                faker.random.number({ min: 1, max: 3 })
+              ),
+              rating: faker.random.number({ min: 1, max: 5 }),
+            })
+          );
+        }
       }
+
+      return {
+        ok: true,
+      };
     } catch (e) {
       return {
         ok: false,
