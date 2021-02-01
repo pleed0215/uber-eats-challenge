@@ -1,11 +1,18 @@
 import { Field, ObjectType, InputType, Int, PickType } from "@nestjs/graphql";
-import { CoreOutput } from "./output.dto";
+import {
+  CoreOutput,
+  CorePaginationInput,
+  CorePaginationOutput,
+} from "./output.dto";
 import { Podcast } from "../entities/podcast.entity";
 import { IsInt } from "class-validator";
 import { Episode } from "../entities/episode.entity";
 
+@InputType()
+export class GetAllPodcastsInput extends CorePaginationInput {}
+
 @ObjectType()
-export class GetAllPodcastsOutput extends CoreOutput {
+export class GetAllPodcastsOutput extends CorePaginationOutput {
   @Field((type) => [Podcast], { nullable: true })
   podcasts?: Podcast[];
 }

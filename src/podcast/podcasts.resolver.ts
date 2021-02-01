@@ -12,6 +12,7 @@ import {
   EpisodesOutput,
   EpisodesSearchInput,
   GetAllPodcastsOutput,
+  GetAllPodcastsInput,
 } from "./dtos/podcast.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
 import { Episode } from "./entities/episode.entity";
@@ -55,8 +56,10 @@ export class PodcastsResolver {
   constructor(private readonly podcastsService: PodcastsService) {}
 
   @Query((returns) => GetAllPodcastsOutput)
-  getAllPodcasts(): Promise<GetAllPodcastsOutput> {
-    return this.podcastsService.getAllPodcasts();
+  getAllPodcasts(
+    @Args("input") input: GetAllPodcastsInput
+  ): Promise<GetAllPodcastsOutput> {
+    return this.podcastsService.getAllPodcasts(input);
   }
 
   @Mutation((returns) => CreatePodcastOutput)

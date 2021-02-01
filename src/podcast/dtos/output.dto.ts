@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql";
+import { ObjectType, Field, Int, InputType } from "@nestjs/graphql";
 import { IsString, IsBoolean, IsOptional } from "class-validator";
 
 @ObjectType()
@@ -29,4 +29,13 @@ export class CorePaginationOutput extends CoreOutput {
 
   @Field((type) => Int, { nullable: true })
   pageSize?: number;
+}
+
+@InputType()
+export class CorePaginationInput {
+  @Field((type) => Int)
+  page: number = 1;
+
+  @Field((type) => Int)
+  pageSize: number = 10;
 }

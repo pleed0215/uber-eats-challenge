@@ -19,6 +19,7 @@ import {
   EpisodesSearchInput,
   GetAllPodcastsOutput,
   GetEpisodeOutput,
+  GetAllPodcastsInput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
@@ -98,11 +99,31 @@ export class PodcastsService {
     error: "You are not owner of this",
   };
 
-  async getAllPodcasts(): Promise<GetAllPodcastsOutput> {
+  async getAllPodcasts({
+    page,
+    pageSize,
+  }: GetAllPodcastsInput): Promise<GetAllPodcastsOutput> {
     try {
-      const podcasts = await this.podcastRepository.find();
+      const query = await this.podcastRepository
+        .createQueryBuilder("podcast")
+        .leftJoinAndSelect("podcast.host", "host")
+        .leftJoinAndSelect("podcast.episodes", "episodes")
+        .leftJoinAndSelect("podcast.listeners", "listeners");
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+
+      const [podcasts, currentCount] = await query
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
       return {
         ok: true,
+        pageSize,
+        currentCount,
+        currentPage: page,
+        totalCount,
+        totalPage,
         podcasts,
       };
     } catch (e) {
