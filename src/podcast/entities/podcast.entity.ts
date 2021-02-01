@@ -45,7 +45,7 @@ export class Podcast extends CoreEntity {
   @IsString()
   thumbnail?: string;
 
-  @OneToMany(() => Episode, (episode) => episode.podcast)
+  @OneToMany(() => Episode, (episode) => episode.podcast, { eager: true })
   @Field((type) => [Episode])
   episodes: Episode[];
 
@@ -55,12 +55,12 @@ export class Podcast extends CoreEntity {
   @RelationId((podcast: Podcast) => podcast.host)
   hostId: number;
 
-  @ManyToMany(() => User, (user) => user.subscriptions)
+  @ManyToMany(() => User, (user) => user.subscriptions, { eager: true })
   @JoinTable()
   @Field((type) => [User], { nullable: true })
   listeners: User[];
 
-  @OneToMany(() => Review, (review) => review.podcast)
+  @OneToMany(() => Review, (review) => review.podcast, { eager: true })
   @Field((type) => [Review], { nullable: true })
   reviews: Review[];
 }
