@@ -25,7 +25,7 @@ import { Review } from "./podcast/entities/review.entity";
             ssl: { rejectUnauthorized: false },
           }
         : { type: "sqlite", database: "db.sqlite3" }),
-      synchronize: false,
+      synchronize: true,
       logging: process.env.NODE_ENV !== "production",
       entities: [Podcast, Episode, User, Review],
     }),
