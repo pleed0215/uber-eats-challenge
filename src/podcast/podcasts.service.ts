@@ -20,6 +20,12 @@ import {
   GetAllPodcastsOutput,
   GetEpisodeOutput,
   GetAllPodcastsInput,
+  GetRecentlyPodcastInput,
+  GetRecentlyPodcastOutput,
+  GetPodcastsByCategoryInput,
+  GetPodcastsByCategoryOutput,
+  GetRecentlyEpisodesInput,
+  GetRecentlyEpisodesOutput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
@@ -55,7 +61,6 @@ import {
 } from "./dtos/fake.dto";
 
 import * as faker from "faker";
-import { min } from "class-validator";
 
 @Injectable()
 export class PodcastsService {
@@ -106,9 +111,7 @@ export class PodcastsService {
     try {
       const query = await this.podcastRepository
         .createQueryBuilder("podcast")
-        .leftJoinAndSelect("podcast.host", "host")
-        .leftJoinAndSelect("podcast.episodes", "episodes")
-        .leftJoinAndSelect("podcast.listeners", "listeners");
+        .leftJoinAndSelect("podcast.host", "host");
 
       const totalCount = await query.getCount();
       const totalPage = Math.ceil(totalCount / pageSize);
@@ -142,13 +145,85 @@ export class PodcastsService {
         host,
       });
       const saved = await this.podcastRepository.save(newPodcast);
-      console.log(saved);
+
       return {
         ok: true,
         id: saved.id,
       };
     } catch (e) {
       return this.InternalServerErrorOutput;
+    }
+  }
+
+  async getRecentlyPodcast({
+    page,
+    pageSize,
+  }: GetRecentlyPodcastInput): Promise<GetRecentlyPodcastOutput> {
+    try {
+      const query = await this.podcastRepository
+        .createQueryBuilder("podcast")
+        .leftJoinAndSelect("podcast.host", "host")
+        .leftJoinAndSelect("podcast.listeners", "listeners");
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+
+      const [podcasts, currentCount] = await query
+        .orderBy("podcast.createdAt", "DESC")
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage: page,
+        podcasts,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async getPodcastsByCategory({
+    category,
+    page,
+    pageSize,
+  }: GetPodcastsByCategoryInput): Promise<GetPodcastsByCategoryOutput> {
+    try {
+      const query = await this.podcastRepository
+        .createQueryBuilder("podcast")
+        .leftJoinAndSelect("podcast.host", "host")
+        .leftJoinAndSelect("podcast.listeners", "listeners")
+        .where("podcast.category=:category", { category });
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+
+      const [podcasts, currentCount] = await query
+        .orderBy("podcast.createdAt", "DESC")
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage: page,
+        podcasts,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
   }
 
@@ -376,6 +451,41 @@ export class PodcastsService {
       return {
         ok: false,
         error: error.message,
+      };
+    }
+  }
+
+  async getRecentlyEpisode({
+    page,
+    pageSize,
+  }: GetRecentlyEpisodesInput): Promise<GetRecentlyEpisodesOutput> {
+    try {
+      const query = this.episodeRepository
+        .createQueryBuilder("episode")
+        .leftJoinAndSelect("episodes.podcast", "podcast")
+        .leftJoinAndSelect("podcast.host", "host");
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+
+      const [episodes, currentCount] = await query
+        .orderBy("episode.createdAt", "DESC")
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage: page,
+        episodes,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
       };
     }
   }

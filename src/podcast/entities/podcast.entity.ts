@@ -45,7 +45,7 @@ export class Podcast extends CoreEntity {
   @IsString()
   thumbnail?: string;
 
-  @OneToMany(() => Episode, (episode) => episode.podcast, { eager: true })
+  @OneToMany(() => Episode, (episode) => episode.podcast)
   @Field((type) => [Episode])
   episodes: Episode[];
 

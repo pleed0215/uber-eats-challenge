@@ -13,6 +13,10 @@ import {
   EpisodesSearchInput,
   GetAllPodcastsOutput,
   GetAllPodcastsInput,
+  GetRecentlyPodcastInput,
+  GetRecentlyPodcastOutput,
+  GetPodcastsByCategoryOutput,
+  GetPodcastsByCategoryInput,
 } from "./dtos/podcast.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
 import { Episode } from "./entities/episode.entity";
@@ -198,5 +202,21 @@ export class EpisodeResolver {
   @Mutation((returns) => SeedReviewsOutput)
   seedFakeReviews(): Promise<SeedReviewsOutput> {
     return this.podcastService.seedReviews();
+  }
+
+  @Role(["Any"])
+  @Query((returns) => GetRecentlyPodcastOutput)
+  getRecentlyPodcast(
+    @Args("input") input: GetRecentlyPodcastInput
+  ): Promise<GetRecentlyPodcastOutput> {
+    return this.podcastService.getRecentlyPodcast(input);
+  }
+
+  @Role(["Any"])
+  @Query((returns) => GetPodcastsByCategoryOutput)
+  getPodcastByCategory(
+    @Args("input") input: GetPodcastsByCategoryInput
+  ): Promise<GetPodcastsByCategoryOutput> {
+    return this.podcastService.getPodcastsByCategory(input);
   }
 }

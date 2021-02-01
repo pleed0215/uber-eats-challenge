@@ -39,6 +39,7 @@ export class Episode extends CoreEntity {
 
   @ManyToOne(() => Podcast, (podcast) => podcast.episodes, {
     onDelete: "CASCADE",
+    eager: true,
   })
   @Field((type) => Podcast)
   podcast: Podcast;

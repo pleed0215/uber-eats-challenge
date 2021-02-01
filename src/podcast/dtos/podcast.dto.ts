@@ -1,4 +1,4 @@
-import { Field, ObjectType, InputType, Int, PickType } from "@nestjs/graphql";
+import { Field, Int, PickType, InputType, ObjectType } from "@nestjs/graphql";
 import {
   CoreOutput,
   CorePaginationInput,
@@ -45,4 +45,34 @@ export class EpisodesSearchInput {
 
 export class GetEpisodeOutput extends CoreOutput {
   episode?: Episode;
+}
+
+@InputType()
+export class GetRecentlyPodcastInput extends CorePaginationInput {}
+
+@ObjectType()
+export class GetRecentlyPodcastOutput extends CorePaginationOutput {
+  @Field((type) => [Podcast], { nullable: true })
+  podcasts?: Podcast[];
+}
+
+@InputType()
+export class GetPodcastsByCategoryInput extends CorePaginationInput {
+  @Field((type) => String)
+  category: string;
+}
+
+@ObjectType()
+export class GetPodcastsByCategoryOutput extends CorePaginationOutput {
+  @Field((type) => [Podcast], { nullable: true })
+  podcasts?: Podcast[];
+}
+
+@InputType()
+export class GetRecentlyEpisodesInput extends CorePaginationInput {}
+
+@ObjectType()
+export class GetRecentlyEpisodesOutput extends CorePaginationOutput {
+  @Field((type) => [Episode], { nullable: true })
+  episodes?: Episode[];
 }
