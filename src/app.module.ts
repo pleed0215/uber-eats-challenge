@@ -41,7 +41,7 @@ import { Review } from "./podcast/entities/review.entity";
       context: ({ req }) => {
         return { user: req["user"] };
       },
-      playground: true,
+      playground: process.env.NODE_ENV !== "production",
       introspection: true,
     }),
     JwtModule.forRoot({
