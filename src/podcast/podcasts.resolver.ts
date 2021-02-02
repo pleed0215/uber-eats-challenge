@@ -20,6 +20,7 @@ import {
   GetRecentlyEpisodesOutput,
   GetEpisodesInput,
   GetEpisodesOutput,
+  GetEpisodeOutput,
 } from "./dtos/podcast.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
 import { Episode } from "./entities/episode.entity";
@@ -156,6 +157,14 @@ export class EpisodeResolver {
     @Args("input") input: GetEpisodesInput
   ): Promise<GetEpisodesOutput> {
     return this.podcastService.getEpisodes(input);
+  }
+
+  @Query((returns) => GetEpisodeOutput)
+  @Role(["Any"])
+  getEpisode(
+    @Args("input") input: EpisodesSearchInput
+  ): Promise<GetEpisodeOutput> {
+    return this.podcastService.getEpisode(input);
   }
 
   @Mutation((returns) => CreateEpisodeOutput)
