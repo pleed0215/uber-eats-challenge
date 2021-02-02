@@ -158,9 +158,7 @@ export class EpisodeResolver {
   ): Promise<GetEpisodesOutput> {
     return this.podcastService.getEpisodes(input);
   }
-
   @Query((returns) => GetEpisodeOutput)
-  @Role(["Any"])
   getEpisode(
     @Args("input") input: EpisodesSearchInput
   ): Promise<GetEpisodeOutput> {

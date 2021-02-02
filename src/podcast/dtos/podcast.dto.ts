@@ -43,6 +43,7 @@ export class EpisodesSearchInput {
   episodeId: number;
 }
 
+@ObjectType()
 export class GetEpisodeOutput extends CoreOutput {
   episode?: Episode;
 }
