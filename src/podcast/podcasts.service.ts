@@ -232,7 +232,7 @@ export class PodcastsService {
   async getPodcast(id: number): Promise<PodcastOutput> {
     try {
       const podcast = await this.podcastRepository.findOne(id, {
-        relations: ["host", "reviews", "reviews.reviewer", "listeners"],
+        relations: ["host", "listeners"],
       });
       if (!podcast) {
         return {
