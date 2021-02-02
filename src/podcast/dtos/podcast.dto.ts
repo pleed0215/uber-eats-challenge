@@ -45,6 +45,7 @@ export class EpisodesSearchInput {
 
 @ObjectType()
 export class GetEpisodeOutput extends CoreOutput {
+  @Field((type) => Episode, { nullable: true })
   episode?: Episode;
 }
 
