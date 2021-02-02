@@ -628,6 +628,7 @@ export class PodcastsService {
       const query = await this.reviewRepository
         .createQueryBuilder("reviews")
         .leftJoinAndSelect("reviews.podcast", "podcast")
+        .leftJoinAndSelect("reviews.reviewer", "reviewer")
         .where("podcast.id = :podcastId", { podcastId });
       const totalCount = await query.getCount();
       const totalPage = Math.ceil(totalCount / pageSize);
