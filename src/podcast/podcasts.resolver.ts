@@ -158,6 +158,7 @@ export class EpisodeResolver {
   ): Promise<GetEpisodesOutput> {
     return this.podcastService.getEpisodes(input);
   }
+
   @Query((returns) => GetEpisodeOutput)
   getEpisode(
     @Args("input") input: EpisodesSearchInput
