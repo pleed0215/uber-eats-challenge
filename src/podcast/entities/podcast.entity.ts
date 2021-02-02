@@ -55,7 +55,7 @@ export class Podcast extends CoreEntity {
   @RelationId((podcast: Podcast) => podcast.host)
   hostId: number;
 
-  @ManyToMany(() => User, (user) => user.subscriptions, { eager: true })
+  @ManyToMany(() => User, (user) => user.subscriptions)
   @JoinTable()
   @Field((type) => [User], { nullable: true })
   listeners: User[];

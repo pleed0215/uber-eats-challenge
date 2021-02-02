@@ -232,7 +232,7 @@ export class PodcastsService {
   async getPodcast(id: number): Promise<PodcastOutput> {
     try {
       const podcast = await this.podcastRepository.findOne(id, {
-        relations: ["host"],
+        relations: ["host", "reviews", "reviews.reviewer", "listeners"],
       });
       if (!podcast) {
         return {
@@ -340,7 +340,9 @@ export class PodcastsService {
     episodeId,
   }: EpisodesSearchInput): Promise<GetEpisodeOutput> {
     try {
-      const episode = await this.episodeRepository.findOneOrFail(episodeId);
+      const episode = await this.episodeRepository.findOneOrFail(episodeId, {
+        relations: ["podcast", "podcast.host"],
+      });
       if (episode.podcastId !== podcastId)
         throw new Error("The episode doesn not belong to this podcast");
       return {
