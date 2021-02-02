@@ -308,6 +308,7 @@ export class PodcastsService {
       const query = await this.episodeRepository
         .createQueryBuilder("episode")
         .leftJoinAndSelect("episode.podcast", "podcast")
+        .leftJoinAndSelect("podcast.host", "host")
         .where("podcast.id=:podcastId", { podcastId });
 
       const totalCount = await query.getCount();
