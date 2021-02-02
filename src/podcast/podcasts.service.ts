@@ -229,10 +229,7 @@ export class PodcastsService {
 
   async getPodcast(id: number): Promise<PodcastOutput> {
     try {
-      const podcast = await this.podcastRepository.findOne(
-        { id },
-        { relations: ["episodes"] }
-      );
+      const podcast = await this.podcastRepository.findOne({ id });
       if (!podcast) {
         return {
           ok: false,
