@@ -49,7 +49,7 @@ export class Podcast extends CoreEntity {
   @Field((type) => [Episode])
   episodes: Episode[];
 
-  @ManyToOne(() => User, (user) => user.podcasts)
+  @ManyToOne(() => User, (user) => user.podcasts, { eager: true })
   @Field((type) => User)
   host: User;
   @RelationId((podcast: Podcast) => podcast.host)
