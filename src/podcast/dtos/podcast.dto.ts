@@ -27,7 +27,7 @@ export class PodcastOutput extends CoreOutput {
 }
 
 @ObjectType()
-export class EpisodesOutput extends CoreOutput {
+export class EpisodesOutput extends CorePaginationOutput {
   @Field((type) => [Episode], { nullable: true })
   episodes?: Episode[];
 }
@@ -74,5 +74,17 @@ export class GetRecentlyEpisodesInput extends CorePaginationInput {}
 @ObjectType()
 export class GetRecentlyEpisodesOutput extends CorePaginationOutput {
   @Field((type) => [Episode], { nullable: true })
+  episodes?: Episode[];
+}
+
+@InputType()
+export class GetEpisodesInput extends CorePaginationInput {
+  @Field((type) => Int)
+  podcastId: number;
+}
+
+@ObjectType()
+export class GetEpisodesOutput extends CorePaginationOutput {
+  @Field((type) => [Episode])
   episodes?: Episode[];
 }

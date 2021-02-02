@@ -44,6 +44,9 @@ export class Episode extends CoreEntity {
   @Field((type) => Podcast)
   podcast: Podcast;
 
+  @RelationId((episode: Episode) => episode.podcast)
+  podcastId: number;
+
   @ManyToMany(() => User, (user) => user.sawEpisode)
   @JoinTable()
   @Field((type) => [User], { nullable: true })

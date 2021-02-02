@@ -26,6 +26,8 @@ import {
   GetPodcastsByCategoryOutput,
   GetRecentlyEpisodesInput,
   GetRecentlyEpisodesOutput,
+  GetEpisodesOutput,
+  GetEpisodesInput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
@@ -295,36 +297,60 @@ export class PodcastsService {
     }
   }
 
-  async getEpisodes(podcastId: number): Promise<EpisodesOutput> {
-    const { podcast, ok, error } = await this.getPodcast(podcastId);
-    if (!ok) {
-      return { ok, error };
+  async getEpisodes({
+    page,
+    pageSize,
+    podcastId,
+  }: GetEpisodesInput): Promise<GetEpisodesOutput> {
+    try {
+      const query = await this.episodeRepository
+        .createQueryBuilder("episode")
+        .leftJoinAndSelect("episode.podcast", "podcast")
+        .where("podcast.id=:podcastId", { podcastId });
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+
+      const [episodes, currentCount] = await query
+        .orderBy("episode.createdAt", "DESC")
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage: page,
+        episodes,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
-    return {
-      ok: true,
-      episodes: podcast.episodes,
-    };
   }
 
   async getEpisode({
     podcastId,
     episodeId,
   }: EpisodesSearchInput): Promise<GetEpisodeOutput> {
-    const { episodes, ok, error } = await this.getEpisodes(podcastId);
-    if (!ok) {
-      return { ok, error };
-    }
-    const episode = episodes.find((episode) => episode.id === episodeId);
-    if (!episode) {
+    try {
+      const episode = await this.episodeRepository.findOneOrFail(episodeId);
+      if (episode.podcastId !== podcastId)
+        throw new Error("The episode doesn not belong to this podcast");
+      return {
+        ok: true,
+        episode,
+      };
+    } catch (e) {
       return {
         ok: false,
-        error: `Episode with id ${episodeId} not found in podcast with id ${podcastId}`,
+        error: e.message,
       };
     }
-    return {
-      ok: true,
-      episode,
-    };
   }
 
   async createEpisode({
