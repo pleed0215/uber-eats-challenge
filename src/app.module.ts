@@ -10,6 +10,7 @@ import { JwtModule } from "./jwt/jwt.module";
 import { JwtMiddleware } from "./jwt/jwt.middleware";
 import { AuthModule } from "./auth/auth.module";
 import { Review } from "./podcast/entities/review.entity";
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { Review } from "./podcast/entities/review.entity";
     PodcastsModule,
     UsersModule,
     AuthModule,
+    UploadsModule,
   ],
 })
 export class AppModule {
