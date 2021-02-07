@@ -760,7 +760,7 @@ export class PodcastsService {
             })}.jpg`,
             listeners: faker.random.arrayElements(
               listeners,
-              faker.random.number({ min: 1, max: 50 })
+              faker.random.number({ min: 1, max: 30 })
             ),
           })
         );
@@ -777,13 +777,13 @@ export class PodcastsService {
                 faker.random.number({ min: 3, max: 10 })
               ),
               description: faker.lorem.paragraph(
-                faker.random.number({ min: 4, max: 8 })
+                faker.random.number({ min: 3, max: 4 })
               ),
               category: faker.random.arrayElement(category),
               playLength: faker.random.number({ min: 30, max: 60 * 60 * 3 }),
               seenUser: faker.random.arrayElements(
                 listeners,
-                faker.random.number({ min: 1, max: 30 })
+                faker.random.number({ min: 1, max: 20 })
               ),
             })
           );
