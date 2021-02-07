@@ -20,9 +20,9 @@ import { UploadsModule } from "./uploads/uploads.module";
             //type: "postgres",
             //...(process.env.DATABASE_URL
             type: "mariadb",
-            ...(process.env.JAWSDB_MARIA_URL
+            ...(process.env.JAWSDB_URL
               ? {
-                  url: process.env.JAWSDB_MARIA_URL,
+                  url: process.env.JAWSDB_URL,
                   ssl: { rejectUnauthorized: false },
                 }
               : {
