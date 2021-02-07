@@ -84,7 +84,7 @@ export class UsersService {
   async findById(id: number): Promise<UserProfileOutput> {
     try {
       const user = await this.users.findOneOrFail(id, {
-        relations: ["podcasts", "subscriptions", "sawEpisode", "reviews"],
+        relations: ["podcasts", "sawEpisode", "reviews"],
       });
       return {
         ok: true,
