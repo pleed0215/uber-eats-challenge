@@ -81,11 +81,17 @@ export class UsersService {
     }
   }
 
-  async findById(id: number): Promise<UserProfileOutput> {
+  async findById(
+    id: number,
+    detail: boolean = false
+  ): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOneOrFail(id, {
-        relations: ["podcasts", "subscriptions", "sawEpisode", "reviews"],
-      });
+      const user = await this.users.findOneOrFail(
+        id,
+        detail && {
+          relations: ["podcasts", "reviews", "sawEpisode", "subscriptions"],
+        }
+      );
       return {
         ok: true,
         user,

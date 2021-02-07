@@ -41,7 +41,7 @@ export class UsersResolver {
   seeProfile(
     @Args() userProfileInput: UserProfileInput
   ): Promise<UserProfileOutput> {
-    return this.usersService.findById(userProfileInput.userId);
+    return this.usersService.findById(userProfileInput.userId, true);
   }
 
   @Role(["Any"])

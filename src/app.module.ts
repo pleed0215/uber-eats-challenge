@@ -17,10 +17,8 @@ import { UploadsModule } from "./uploads/uploads.module";
     TypeOrmModule.forRoot({
       ...(process.env.NODE_ENV === "production"
         ? {
-            //type: "postgres",
-            //...(process.env.DATABASE_URL
-            type: "mariadb",
-            ...(process.env.JAWSDB_URL
+            type: "postgres",
+            ...(process.env.DATABASE_URL
               ? {
                   url: process.env.JAWSDB_URL,
                   ssl: { rejectUnauthorized: false },
