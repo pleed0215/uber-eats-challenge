@@ -10,17 +10,19 @@ import { JwtModule } from "./jwt/jwt.module";
 import { JwtMiddleware } from "./jwt/jwt.middleware";
 import { AuthModule } from "./auth/auth.module";
 import { Review } from "./podcast/entities/review.entity";
-import { UploadsModule } from './uploads/uploads.module';
+import { UploadsModule } from "./uploads/uploads.module";
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       ...(process.env.NODE_ENV === "production"
         ? {
-            type: "postgres",
-            ...(process.env.DATABASE_URL
+            //type: "postgres",
+            //...(process.env.DATABASE_URL
+            type: "mariadb",
+            ...(process.env.JAWSDB_MARIA_URL
               ? {
-                  url: process.env.DATABASE_URL,
+                  url: process.env.JAWSDB_MARIA_URL,
                   ssl: { rejectUnauthorized: false },
                 }
               : {
