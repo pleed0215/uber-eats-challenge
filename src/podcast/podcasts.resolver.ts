@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+  Int,
+} from "@nestjs/graphql";
 import { PodcastsService } from "./podcasts.service";
 import { Podcast } from "./entities/podcast.entity";
 import {
@@ -58,6 +66,8 @@ import {
   SeedPodcastAndEpisodeOutput,
   SeedReviewsOutput,
 } from "./dtos/fake.dto";
+import { User } from "src/users/entities/user.entity";
+import { listenerCount } from "process";
 
 @Resolver((of) => Podcast)
 export class PodcastsResolver {
@@ -146,6 +156,15 @@ export class PodcastsResolver {
   ): Promise<SeePodcastReviewsOutput> {
     return this.podcastsService.seePodcastReviews(input);
   }
+
+  @ResolveField((type) => Boolean, { nullable: true })
+  @Role(["Listener"])
+  isOnSubscibe(
+    @Parent() podcast: Podcast,
+    @AuthUser() listener: User
+  ): Promise<Boolean> {
+    return this.podcastsService.isOnSubscribe(listener, podcast);
+  }
 }
 
 @Resolver((of) => Episode)
@@ -181,6 +200,24 @@ export class EpisodeResolver {
     @Args("input") updateEpisodeInput: UpdateEpisodeInput
   ): Promise<CoreOutput> {
     return this.podcastService.updateEpisode(authUser, updateEpisodeInput);
+  }
+
+  @ResolveField((returns) => Boolean)
+  @Role(["Any"])
+  haveSeen(
+    @AuthUser() listener: User,
+    @Parent() episode: Episode
+  ): Promise<Boolean> {
+    return this.podcastService.haveSeen(listener, episode);
+  }
+
+  @ResolveField((returns) => Int)
+  @Role(["Any"])
+  watchCounter(
+    @AuthUser() listener: User,
+    @Parent() episode: Episode
+  ): Promise<number> {
+    return this.podcastService.watchCounter(episode);
   }
 
   @Mutation((returns) => CoreOutput)

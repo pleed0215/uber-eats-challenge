@@ -63,6 +63,7 @@ import {
 } from "./dtos/fake.dto";
 
 import * as faker from "faker";
+import { listenerCount } from "process";
 
 @Injectable()
 export class PodcastsService {
@@ -133,6 +134,21 @@ export class PodcastsService {
       };
     } catch (e) {
       return this.InternalServerErrorOutput;
+    }
+  }
+
+  async isOnSubscribe(listener: User, podcast: Podcast): Promise<Boolean> {
+    try {
+      if (!podcast.listeners) {
+        const p = await this.podcastRepository.findOneOrFail(podcast.id, {
+          relations: ["listeners"],
+        });
+        return p.listeners.some((l) => l.id === listener.id);
+      } else {
+        return podcast.listeners.some((l) => l.id === listener.id);
+      }
+    } catch (e) {
+      throw Error(e.message);
     }
   }
 
@@ -518,6 +534,36 @@ export class PodcastsService {
     }
   }
 
+  async haveSeen(listener: User, episode: Episode): Promise<Boolean> {
+    try {
+      if (episode.seenUser) {
+        return episode.seenUser.some((l) => l.id === listener.id);
+      } else {
+        const e = await this.episodeRepository.findOneOrFail(episode.id, {
+          relations: ["seenUser"],
+        });
+        return e.seenUser.some((l) => l.id === listener.id);
+      }
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
+
+  async watchCounter(episode: Episode): Promise<number> {
+    try {
+      if (episode.seenUser) {
+        return episode.seenUser.length;
+      } else {
+        const e = await this.episodeRepository.findOneOrFail(episode.id, {
+          relations: ["seenUser"],
+        });
+        return e.seenUser.length;
+      }
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
+
   async reviewPodcast(
     reviewer: User,
     { podcastId, content, rating }: ReviewPodcastInput
@@ -679,7 +725,10 @@ export class PodcastsService {
           count,
         };
       } else {
-        throw Error("Watched before");
+        return {
+          ok: true,
+          count: episode.seenUser.length,
+        };
       }
     } catch (error) {
       return {
