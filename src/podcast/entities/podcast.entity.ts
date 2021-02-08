@@ -60,7 +60,7 @@ export class Podcast extends CoreEntity {
   @Field((type) => [User], { nullable: true })
   listeners: User[];
 
-  @OneToMany(() => Review, (review) => review.podcast, { eager: true })
+  @OneToMany(() => Review, (review) => review.podcast)
   @Field((type) => [Review], { nullable: true })
   reviews: Review[];
 }
