@@ -4,7 +4,7 @@ import { CoreOutput } from "./output.dto";
 
 @InputType()
 export class EditProfileInput extends PartialType(
-  PickType(User, ["email", "password", "role", "portrait"])
+  PickType(User, ["email", "password", "role", "portrait", "name"])
 ) {}
 
 @ObjectType()
