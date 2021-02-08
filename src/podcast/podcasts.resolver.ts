@@ -159,7 +159,7 @@ export class PodcastsResolver {
 
   @ResolveField((type) => Boolean, { nullable: true })
   @Role(["Any"])
-  isOnSubscibe(
+  isOnSubscribe(
     @Parent() podcast: Podcast,
     @AuthUser() listener: User
   ): Promise<Boolean> {
