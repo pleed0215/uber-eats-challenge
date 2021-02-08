@@ -593,13 +593,15 @@ export class PodcastsService {
     { page, pageSize }: SeeSubscriptionInput
   ): Promise<SeeSubscriptionOutput> {
     try {
-      const totalCount = await this.podcastRepository.count();
-      const totalPage = Math.ceil(totalCount / pageSize);
-      const [subscriptions, count] = await this.podcastRepository
+      const query = await this.podcastRepository
         .createQueryBuilder("podcast")
         .leftJoinAndSelect("podcast.host", "host")
         .leftJoinAndSelect("podcast.listeners", "listeners")
-        .where("listeners.id=:listenerId", { listenerId: listener.id })
+        .where("listeners.id=:listenerId", { listenerId: listener.id });
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const [subscriptions, currentCount] = await query
         .skip((page - 1) * pageSize)
         .take(pageSize)
         .getManyAndCount();
@@ -607,7 +609,7 @@ export class PodcastsService {
       return {
         ok: true,
         subscriptions,
-        currentCount: count,
+        currentCount,
         currentPage: page,
         totalPage,
         totalCount,
