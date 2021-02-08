@@ -597,6 +597,7 @@ export class PodcastsService {
       const totalPage = Math.ceil(totalCount / pageSize);
       const [subscriptions, count] = await this.podcastRepository
         .createQueryBuilder("podcast")
+        .leftJoinAndSelect("podcast.host", "host")
         .leftJoinAndSelect("podcast.listeners", "listeners")
         .where("listeners.id=:listenerId", { listenerId: listener.id })
         .skip((page - 1) * pageSize)
