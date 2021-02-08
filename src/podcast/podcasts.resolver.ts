@@ -158,12 +158,18 @@ export class PodcastsResolver {
   }
 
   @ResolveField((type) => Boolean, { nullable: true })
-  @Role(["Listener"])
+  @Role(["Any"])
   isOnSubscibe(
     @Parent() podcast: Podcast,
     @AuthUser() listener: User
   ): Promise<Boolean> {
     return this.podcastsService.isOnSubscribe(listener, podcast);
+  }
+
+  @ResolveField((type) => Int, { nullable: true })
+  @Role(["Any"])
+  numSubscriber(@Parent() podcast: Podcast): Promise<number> {
+    return this.podcastsService.numSubscriber(podcast);
   }
 }
 

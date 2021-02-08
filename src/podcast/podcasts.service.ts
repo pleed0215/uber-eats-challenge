@@ -245,6 +245,21 @@ export class PodcastsService {
     }
   }
 
+  async numSubscriber(podcast: Podcast): Promise<number> {
+    try {
+      if (podcast.listeners) {
+        return podcast.listeners.length;
+      } else {
+        const p = await this.podcastRepository.findOneOrFail(podcast.id, {
+          relations: ["listeners"],
+        });
+        return p.listeners.length;
+      }
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
+
   async getPodcast(id: number): Promise<PodcastOutput> {
     try {
       const podcast = await this.podcastRepository.findOne(id, {
