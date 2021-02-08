@@ -106,13 +106,15 @@ export class UsersService {
 
   async editProfile(
     userId: number,
-    { email, password }: EditProfileInput
+    { email, password, portrait, role }: EditProfileInput
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOneOrFail(userId);
 
       if (email) user.email = email;
       if (password) user.password = password;
+      if (portrait) user.portrait = portrait;
+      if (role) user.role = role;
 
       await this.users.save(user);
       return {
