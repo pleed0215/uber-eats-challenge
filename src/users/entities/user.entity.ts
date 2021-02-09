@@ -41,7 +41,7 @@ export class User extends CoreEntity {
   @IsString()
   name?: string;
 
-  @Column()
+  @Column({ select: false })
   @Field((type) => String)
   @IsString()
   password: string;
