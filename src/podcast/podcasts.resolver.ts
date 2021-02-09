@@ -156,6 +156,15 @@ export class PodcastsResolver {
     return this.podcastsService.seeSubscriptions(authUser, input);
   }
 
+  @ResolveField((type) => Boolean)
+  @Role(["Any"])
+  reviewedPodcast(
+    @AuthUser() listener,
+    @Parent() podcast: Podcast
+  ): Promise<boolean> {
+    return this.podcastsService.reviewedPodcast(listener, podcast);
+  }
+
   @Query((returns) => SeePodcastReviewsOutput)
   @Role(["Any"])
   seePodcastReviews(

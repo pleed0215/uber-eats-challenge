@@ -249,6 +249,26 @@ export class PodcastsService {
     return listener.id === review.reviewerId;
   }
 
+  async reviewedPodcast(listener: User, podcast: Podcast): Promise<boolean> {
+    try {
+      if (podcast.reviews) {
+        return podcast.reviews.some((r) => r.reviewerId === listener.id);
+      } else {
+        const query = await this.reviewRepository
+          .createQueryBuilder("review")
+          .leftJoinAndSelect("review.podcast", "podcast")
+          .where("podcast.id =:podcastId", { podcastid: podcast.id })
+          .leftJoinAndSelect("review.reviewer", "reviewer")
+          .andWhere("reviewer.id=:id", { id: listener.id })
+          .getCount();
+
+        return query !== 0;
+      }
+    } catch (e) {
+      throw Error(e.message);
+    }
+  }
+
   async numSubscriber(podcast: Podcast): Promise<number> {
     try {
       if (podcast.listeners) {
