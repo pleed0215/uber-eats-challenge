@@ -106,7 +106,7 @@ export class UsersService {
 
   async editProfile(
     userId: number,
-    { email, password, portrait, role }: EditProfileInput
+    { email, password, portrait, role, name }: EditProfileInput
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOneOrFail(userId);
@@ -115,6 +115,7 @@ export class UsersService {
       if (password) user.password = password;
       if (portrait) user.portrait = portrait;
       if (role) user.role = role;
+      if (name) user.name = name;
 
       await this.users.save(user);
       return {
