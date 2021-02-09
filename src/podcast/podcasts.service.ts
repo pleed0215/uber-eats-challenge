@@ -257,7 +257,7 @@ export class PodcastsService {
         const query = await this.reviewRepository
           .createQueryBuilder("review")
           .leftJoinAndSelect("review.podcast", "podcast")
-          .where("podcast.id =:podcastId", { podcastid: podcast.id })
+          .where("podcast.id =:podcastId", { podcastId: podcast.id })
           .leftJoinAndSelect("review.reviewer", "reviewer")
           .andWhere("reviewer.id=:id", { id: listener.id })
           .getCount();
