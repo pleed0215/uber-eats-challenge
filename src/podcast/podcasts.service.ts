@@ -245,6 +245,10 @@ export class PodcastsService {
     }
   }
 
+  reviewed(listener: User, review: Review): boolean {
+    return listener.id === review.reviewerId;
+  }
+
   async numSubscriber(podcast: Podcast): Promise<number> {
     try {
       if (podcast.listeners) {

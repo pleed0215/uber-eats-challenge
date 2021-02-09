@@ -68,6 +68,7 @@ import {
 } from "./dtos/fake.dto";
 import { User } from "src/users/entities/user.entity";
 import { listenerCount } from "process";
+import { Review } from "./entities/review.entity";
 
 @Resolver((of) => Podcast)
 export class PodcastsResolver {
@@ -138,6 +139,12 @@ export class PodcastsResolver {
     @Args("input") input: ToggleSubscriptionInput
   ): Promise<ToggleSubscriptionOutput> {
     return this.podcastsService.toggleSubscription(authUser, input);
+  }
+
+  @ResolveField((type) => Boolean, { nullable: true })
+  @Role(["Any"])
+  reviewed(@AuthUser() listener: User, @Parent() review: Review): boolean {
+    return this.podcastsService.reviewed(listener, review);
   }
 
   @Query((returns) => SeeSubscriptionOutput)
