@@ -28,6 +28,7 @@ import {
   GetRecentlyEpisodesOutput,
   GetEpisodesOutput,
   GetEpisodesInput,
+  GetMyPodcastsOutput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
@@ -704,6 +705,30 @@ export class PodcastsService {
       return {
         ok: false,
         error: error.message,
+      };
+    }
+  }
+
+  async getMyPodcasts(host: User): Promise<GetMyPodcastsOutput> {
+    try {
+      if (host.role !== UserRole.Host)
+        throw Error("You are not a host. Cannot fetch podcast.");
+
+      const podcasts = await this.podcastRepository
+        .createQueryBuilder("podcast")
+        .leftJoinAndSelect("podcast.host", "host")
+        .where("host.id = :hostId", { hostId: host.id })
+        .orderBy("podcast.createdAt", "DESC")
+        .getMany();
+
+      return {
+        ok: true,
+        podcasts,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
       };
     }
   }
