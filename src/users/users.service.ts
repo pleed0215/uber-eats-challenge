@@ -117,8 +117,6 @@ export class UsersService {
       if (role) user.role = role;
       if (name) user.name = name;
 
-      console.log(user);
-
       await this.users.save(user);
       return {
         ok: true,
