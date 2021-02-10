@@ -202,7 +202,7 @@ export class PodcastsResolver {
 
   @Query((returns) => GetMyPodcastsOutput)
   @Role(["Host"])
-  getMyPodcast(@AuthUser() host: User): Promise<GetMyPodcastsOutput> {
+  getMyPodcasts(@AuthUser() host: User): Promise<GetMyPodcastsOutput> {
     return this.podcastsService.getMyPodcasts(host);
   }
 }
