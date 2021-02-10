@@ -744,15 +744,14 @@ export class PodcastsService {
       const query = await this.episodeRepository
         .createQueryBuilder("episode")
         .leftJoinAndSelect("episode.podcast", "podcast")
-        .innerJoin("episode.seenUser", "seenUser")
-        .where("seenUser.id <> :id", { id: listener.id })
-        .leftJoin("podcast.listeners", "listeners")
-        .where("listeners.id = :listenerId AND seenUser.id != :id", {
-          listenerId: listener.id,
+        .leftJoin("episode.seenUser", "seenUser", "seenUser.id != :id", {
           id: listener.id,
+        })
+        .leftJoin("podcast.listeners", "listeners")
+        .where("listeners.id = :listenerId ", {
+          listenerId: listener.id,
         });
 
-      console.log(listener.id);
       const totalCount = await query.getCount();
       const totalPage = Math.ceil(totalCount / pageSize);
       const [feeds, currentCount] = await query
