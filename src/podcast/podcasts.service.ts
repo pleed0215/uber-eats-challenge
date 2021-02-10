@@ -744,11 +744,12 @@ export class PodcastsService {
       const query = await this.episodeRepository
         .createQueryBuilder("episode")
         .leftJoinAndSelect("episode.podcast", "podcast")
-        .leftJoinAndSelect("episode.seenUser", "seenUser")
+        .innerJoin("episode.seenUser", "seenUser")
+        .where("seenUser.id <> :id", { id: listener.id })
         .leftJoin("podcast.listeners", "listeners")
-        .where("listeners.id = :listenerId", { listenerId: listener.id })
-        .andWhere("seenUser.id != :listenerId", {
+        .where("listeners.id = :listenerId AND seenUser.id != :id", {
           listenerId: listener.id,
+          id: listener.id,
         });
 
       console.log(listener.id);
