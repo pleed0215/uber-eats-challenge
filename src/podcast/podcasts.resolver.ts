@@ -29,6 +29,9 @@ import {
   GetEpisodesInput,
   GetEpisodesOutput,
   GetEpisodeOutput,
+  GetFeedsOutput,
+  GetFeedsInput,
+  GetMyPodcastsOutput,
 } from "./dtos/podcast.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
 import { Episode } from "./entities/episode.entity";
@@ -67,7 +70,7 @@ import {
   SeedReviewsOutput,
 } from "./dtos/fake.dto";
 import { User } from "src/users/entities/user.entity";
-import { listenerCount } from "process";
+import { listenerCount, listeners } from "process";
 import { Review } from "./entities/review.entity";
 
 @Resolver((of) => Podcast)
@@ -186,6 +189,21 @@ export class PodcastsResolver {
   @Role(["Any"])
   numSubscriber(@Parent() podcast: Podcast): Promise<number> {
     return this.podcastsService.numSubscriber(podcast);
+  }
+
+  @Query((returns) => GetFeedsOutput)
+  @Role(["Any"])
+  getFeeds(
+    @AuthUser() listener,
+    @Args("input") input: GetFeedsInput
+  ): Promise<GetFeedsOutput> {
+    return this.podcastsService.getMyFeeds(listener, input);
+  }
+
+  @Query((returns) => GetMyPodcastsOutput)
+  @Role(["Host"])
+  getMyPodcast(@AuthUser() host: User): Promise<GetMyPodcastsOutput> {
+    return this.podcastsService.getMyPodcasts(host);
   }
 }
 

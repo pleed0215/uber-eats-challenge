@@ -35,7 +35,7 @@ export class GetFeedsOutput extends CorePaginationOutput {
   feeds?: Episode[];
 }
 
-@Object()
+@ObjectType()
 export class GetMyPodcastsOutput extends CoreOutput {
   @Field((type) => [Podcast], { nullable: true })
   podcasts?: Podcast[];

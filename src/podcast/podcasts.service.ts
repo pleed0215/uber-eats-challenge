@@ -29,9 +29,11 @@ import {
   GetEpisodesOutput,
   GetEpisodesInput,
   GetMyPodcastsOutput,
+  GetFeedsOutput,
+  GetFeedsInput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ILike, Repository } from "typeorm";
+import { Brackets, ILike, Repository } from "typeorm";
 import { User, UserRole } from "src/users/entities/user.entity";
 import {
   SearchPodcastInput,
@@ -577,6 +579,7 @@ export class PodcastsService {
   async haveSeen(listener: User, episode: Episode): Promise<Boolean> {
     try {
       if (episode.seenUser) {
+        console.log(episode.seenUser);
         return episode.seenUser.some((l) => l.id === listener.id);
       } else {
         const e = await this.episodeRepository.findOneOrFail(episode.id, {
@@ -724,6 +727,47 @@ export class PodcastsService {
       return {
         ok: true,
         podcasts,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async getMyFeeds(
+    listener: User,
+    { page, pageSize }: GetFeedsInput
+  ): Promise<GetFeedsOutput> {
+    try {
+      const query = await this.episodeRepository
+        .createQueryBuilder("episode")
+        .leftJoinAndSelect("episode.podcast", "podcast")
+        .leftJoinAndSelect("episode.seenUser", "seenUser")
+        .leftJoin("podcast.listeners", "listeners")
+        .where("listeners.id = :listenerId", { listenerId: listener.id })
+        .andWhere("seenUser.id != :listenerId", {
+          listenerId: listener.id,
+        });
+
+      console.log(listener.id);
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const [feeds, currentCount] = await query
+        .orderBy("episode.createdAt", "DESC")
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage: page,
+        pageSize,
+        feeds,
       };
     } catch (e) {
       return {
