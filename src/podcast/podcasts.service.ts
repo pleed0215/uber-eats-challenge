@@ -309,51 +309,41 @@ export class PodcastsService {
 
   async deletePodcast(host: User, id: number): Promise<CoreOutput> {
     try {
-      const { ok, error } = await this.getPodcast(id);
+      const podcast = await this.podcastRepository.findOneOrFail(id);
 
-      if (!ok) {
-        return { ok, error };
-      }
-
-      if (!this.areYouCreator(host, id)) {
+      if (podcast.hostId !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
 
-      await this.podcastRepository.delete({ id });
-      return { ok };
+      await this.podcastRepository.delete(podcast);
+      return { ok: true };
     } catch (e) {
-      return this.InternalServerErrorOutput;
+      return {
+        ok: true,
+        error: e.message,
+      };
     }
   }
 
   async updatePodcast(
     host: User,
-    { id, payload }: UpdatePodcastInput
+    { id, ...rest }: UpdatePodcastInput
   ): Promise<CoreOutput> {
     try {
-      const { ok, error, podcast } = await this.getPodcast(id);
-      if (!ok) {
-        return { ok, error };
-      }
-      if (!this.areYouCreator(host, id)) {
+      const podcast = await this.podcastRepository.findOneOrFail(id);
+
+      if (podcast.hostId !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
 
-      if (
-        payload.rating !== null &&
-        (payload.rating < 1 || payload.rating > 5)
-      ) {
-        return {
-          ok: false,
-          error: "Rating must be between 1 and 5.",
-        };
-      } else {
-        const updatedPodcast: Podcast = { ...podcast, ...payload };
-        await this.podcastRepository.save(updatedPodcast);
-        return { ok };
-      }
+      const updatedPodcast: Podcast = { ...podcast, ...rest };
+      await this.podcastRepository.save(updatedPodcast);
+      return { ok: true };
     } catch (e) {
-      return this.InternalServerErrorOutput;
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
   }
 
@@ -443,22 +433,22 @@ export class PodcastsService {
     { podcastId, episodeId }: EpisodesSearchInput
   ): Promise<CoreOutput> {
     try {
-      const { episode, error, ok } = await this.getEpisode({
-        podcastId,
-        episodeId,
+      const episode = await this.episodeRepository.findOneOrFail(episodeId, {
+        relations: ["podcast"],
       });
-
-      if (!ok) {
-        return { ok, error };
+      if (episode.podcastId !== podcastId) {
+        throw Error(`This Episode doesn't belong to podcast id: ${podcastId}`);
       }
-
-      if (!this.areYouCreator(host, episodeId, true)) {
+      if (episode.podcast.hostId !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
-      await this.episodeRepository.delete({ id: episode.id });
+      await this.episodeRepository.delete(episode);
       return { ok: true };
     } catch (e) {
-      return this.InternalServerErrorOutput;
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
   }
 
@@ -467,21 +457,24 @@ export class PodcastsService {
     { podcastId, episodeId, ...rest }: UpdateEpisodeInput
   ): Promise<CoreOutput> {
     try {
-      const { episode, ok, error } = await this.getEpisode({
-        podcastId,
-        episodeId,
+      const episode = await this.episodeRepository.findOneOrFail(episodeId, {
+        relations: ["podcast"],
       });
-      if (!ok) {
-        return { ok, error };
+      if (episode.podcastId !== podcastId) {
+        throw Error(`This Episode doesn't belong to podcast id: ${podcastId}`);
       }
-      if (!this.areYouCreator(host, episodeId, true)) {
+      if (episode.podcast.hostId !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
+
       const updatedEpisode = { ...episode, ...rest };
       await this.episodeRepository.save(updatedEpisode);
       return { ok: true };
     } catch (e) {
-      return this.InternalServerErrorOutput;
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
   }
   // today assignment

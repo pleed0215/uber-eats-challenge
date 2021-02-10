@@ -37,6 +37,11 @@ export class Episode extends CoreEntity {
   @Min(1)
   playLength?: number;
 
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  url?: string;
+
   @ManyToOne(() => Podcast, (podcast) => podcast.episodes, {
     onDelete: "CASCADE",
     eager: true,
