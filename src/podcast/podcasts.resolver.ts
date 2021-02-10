@@ -124,7 +124,7 @@ export class PodcastsResolver {
   }
 
   @Mutation((returns) => ReviewPodcastOutput)
-  @Role(["Listener"])
+  @Role(["Any"])
   reviewPodcast(
     @AuthUser() authUser,
     @Args("input") input: ReviewPodcastInput
@@ -133,7 +133,7 @@ export class PodcastsResolver {
   }
 
   @Mutation((returns) => ToggleSubscriptionOutput)
-  @Role(["Listener"])
+  @Role(["Any"])
   subscribeToPodcast(
     @AuthUser() authUser,
     @Args("input") input: ToggleSubscriptionInput
@@ -148,7 +148,7 @@ export class PodcastsResolver {
   }
 
   @Query((returns) => SeeSubscriptionOutput)
-  @Role(["Listener"])
+  @Role(["Any"])
   seeSubscribtions(
     @AuthUser() authUser,
     @Args("input") input: SeeSubscriptionInput
@@ -252,7 +252,7 @@ export class EpisodeResolver {
   }
 
   @Mutation((returns) => MarkEpisodeAsPlayedOutput)
-  @Role(["Listener"])
+  @Role(["Any"])
   markEpisodeAsPlayed(
     @AuthUser() authUser,
     @Args("input") input: MarkEpisodeAsPlayedInput
