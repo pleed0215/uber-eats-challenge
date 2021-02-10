@@ -33,7 +33,7 @@ import { UploadsModule } from "./uploads/uploads.module";
                 }),
           }
         : { type: "sqlite", database: "db.sqlite3" }),
-      synchronize: true,
+      synchronize: false,
       logging: process.env.NODE_ENV !== "production",
       entities: [Podcast, Episode, User, Review],
     }),
