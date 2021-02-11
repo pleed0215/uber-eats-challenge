@@ -329,9 +329,11 @@ export class PodcastsService {
     { id, ...rest }: UpdatePodcastInput
   ): Promise<CoreOutput> {
     try {
-      const podcast = await this.podcastRepository.findOneOrFail(id);
+      const podcast = await this.podcastRepository.findOneOrFail(id, {
+        relations: ["host"],
+      });
 
-      if (podcast.hostId !== host.id) {
+      if (podcast.host.id !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
 
@@ -451,12 +453,12 @@ export class PodcastsService {
   ): Promise<CoreOutput> {
     try {
       const episode = await this.episodeRepository.findOneOrFail(episodeId, {
-        relations: ["podcast"],
+        relations: ["podcast", "podcast.host"],
       });
       if (episode.podcastId !== podcastId) {
         throw Error(`This Episode doesn't belong to podcast id: ${podcastId}`);
       }
-      if (episode.podcast.hostId !== host.id) {
+      if (episode.podcast.host.id !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
 
