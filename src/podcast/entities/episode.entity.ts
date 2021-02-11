@@ -26,10 +26,10 @@ export class Episode extends CoreEntity {
   @IsString()
   description?: string;
 
-  @Column()
-  @Field((type) => String)
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
   @IsString()
-  category: string;
+  category?: string;
 
   @Column({ nullable: true })
   @Field((type) => Int, { nullable: true })

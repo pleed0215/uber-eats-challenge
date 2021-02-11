@@ -6,12 +6,15 @@ import { CoreOutput } from "./output.dto";
 @InputType()
 export class CreateEpisodeInput extends PickType(
   Episode,
-  ["title", "category", "description", "url"],
+  ["title", "description"],
   InputType
 ) {
   @Field((type) => Int)
   @IsInt()
   podcastId: number;
+
+  @Field((type) => String, { nullable: true })
+  url?: string;
 }
 
 @ObjectType()

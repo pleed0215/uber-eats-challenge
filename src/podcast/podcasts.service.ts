@@ -157,12 +157,11 @@ export class PodcastsService {
 
   async createPodcast(
     host: User,
-    { title, category }: CreatePodcastInput
+    input: CreatePodcastInput
   ): Promise<CreatePodcastOutput> {
     try {
       const newPodcast = this.podcastRepository.create({
-        title,
-        category,
+        ...input,
         host,
       });
       const saved = await this.podcastRepository.save(newPodcast);
@@ -408,16 +407,10 @@ export class PodcastsService {
 
   async createEpisode({
     podcastId,
-    title,
-    category,
+    ...input
   }: CreateEpisodeInput): Promise<CreateEpisodeOutput> {
     try {
-      const { podcast, ok, error } = await this.getPodcast(podcastId);
-      if (!ok) {
-        return { ok, error };
-      }
-      const newEpisode = this.episodeRepository.create({ title, category });
-      newEpisode.podcast = podcast;
+      const newEpisode = this.episodeRepository.create({ ...input, podcastId });
       const { id } = await this.episodeRepository.save(newEpisode);
       return {
         ok: true,
