@@ -326,12 +326,10 @@ export class PodcastsService {
 
   async updatePodcast(
     host: User,
-    { id, ...rest }: UpdatePodcastInput
+    { podcastId, ...rest }: UpdatePodcastInput
   ): Promise<CoreOutput> {
     try {
-      const podcast = await this.podcastRepository.findOneOrFail(id, {
-        relations: ["host"],
-      });
+      const podcast = await this.podcastRepository.findOneOrFail(podcastId);
 
       if (podcast.host.id !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
@@ -453,7 +451,7 @@ export class PodcastsService {
   ): Promise<CoreOutput> {
     try {
       const episode = await this.episodeRepository.findOneOrFail(episodeId, {
-        relations: ["podcast", "podcast.host"],
+        relations: ["podcast"],
       });
       if (episode.podcastId !== podcastId) {
         throw Error(`This Episode doesn't belong to podcast id: ${podcastId}`);
