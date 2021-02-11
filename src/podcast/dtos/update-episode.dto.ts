@@ -5,7 +5,7 @@ import { EpisodesSearchInput } from "./podcast.dto";
 
 @InputType()
 export class UpdateEpisodeInput extends PartialType(
-  PickType(Episode, ["title", "description", "url"])
+  PickType(Episode, ["title", "description", "url", "playLength"])
 ) {
   @Field((type) => Int)
   episodeId: number;

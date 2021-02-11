@@ -15,6 +15,9 @@ export class CreateEpisodeInput extends PickType(
 
   @Field((type) => String, { nullable: true })
   url?: string;
+
+  @Field((type) => Int, { nullable: true })
+  playLength?: number;
 }
 
 @ObjectType()
