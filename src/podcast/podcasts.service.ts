@@ -314,11 +314,11 @@ export class PodcastsService {
         return this.YouAreNotOwnerErrorOutput;
       }
 
-      await this.podcastRepository.delete(podcast);
+      await this.podcastRepository.delete(podcast.id);
       return { ok: true };
     } catch (e) {
       return {
-        ok: true,
+        ok: false,
         error: e.message,
       };
     }
@@ -435,7 +435,7 @@ export class PodcastsService {
       if (episode.podcast.hostId !== host.id) {
         return this.YouAreNotOwnerErrorOutput;
       }
-      await this.episodeRepository.delete(episode);
+      await this.episodeRepository.delete(episode.id);
       return { ok: true };
     } catch (e) {
       return {
