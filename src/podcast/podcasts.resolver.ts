@@ -32,6 +32,8 @@ import {
   GetFeedsOutput,
   GetFeedsInput,
   GetMyPodcastsOutput,
+  GetPodcastListenersInput,
+  GetPodcastListenersOutput,
 } from "./dtos/podcast.dto";
 import { UpdatePodcastInput } from "./dtos/update-podcast.dto";
 import { Episode } from "./entities/episode.entity";
@@ -165,6 +167,14 @@ export class PodcastsResolver {
     @Parent() podcast: Podcast
   ): Promise<boolean> {
     return this.podcastsService.reviewedPodcast(listener, podcast);
+  }
+
+  @Query((returns) => GetPodcastListenersOutput)
+  @Role(["Host"])
+  getPodcastListeners(
+    @Args("input") input: GetPodcastListenersInput
+  ): Promise<GetPodcastListenersOutput> {
+    return this.podcastsService.getPodcastListeners(input);
   }
 
   @Query((returns) => SeePodcastReviewsOutput)
