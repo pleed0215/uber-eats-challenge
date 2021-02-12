@@ -391,7 +391,7 @@ export class PodcastsService {
     pageSize,
   }: GetPodcastListenersInput): Promise<GetPodcastListenersOutput> {
     try {
-      const query = await this.userRepository
+      const query = await this.podcastRepository
         .createQueryBuilder("podcast")
         .where("podcast.id = :id", { id: podcastId })
         .leftJoinAndSelect("podcast.listeners", "listeners");
