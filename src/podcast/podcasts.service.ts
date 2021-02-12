@@ -391,10 +391,10 @@ export class PodcastsService {
     pageSize,
   }: GetPodcastListenersInput): Promise<GetPodcastListenersOutput> {
     try {
-      const query = await this.podcastRepository
-        .createQueryBuilder("podcast")
-        .where("podcast.id = :id", { id: podcastId })
-        .leftJoinAndSelect("podcast.listeners", "listeners");
+      const query = await this.userRepository
+        .createQueryBuilder("user")
+        .leftJoin("user.subscriptions", "subscriptions")
+        .where("subscriptions.id = :id", { id: podcastId });
 
       const totalCount = await query.getCount();
       const totalPage = Math.ceil(totalCount / pageSize);
