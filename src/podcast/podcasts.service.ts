@@ -767,6 +767,7 @@ export class PodcastsService {
       const query = await this.episodeRepository
         .createQueryBuilder("episode")
         .leftJoinAndSelect("episode.podcast", "podcast")
+        .leftJoinAndSelect("podcast.host", "host")
         .leftJoin("episode.seenUser", "seenUser", "seenUser.id != :id", {
           id: listener.id,
         })
