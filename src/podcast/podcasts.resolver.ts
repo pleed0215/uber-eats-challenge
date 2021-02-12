@@ -70,7 +70,6 @@ import {
   SeedReviewsOutput,
 } from "./dtos/fake.dto";
 import { User } from "src/users/entities/user.entity";
-import { listenerCount, listeners } from "process";
 import { Review } from "./entities/review.entity";
 
 @Resolver((of) => Podcast)

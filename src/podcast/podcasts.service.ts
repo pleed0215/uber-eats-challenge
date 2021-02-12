@@ -31,6 +31,8 @@ import {
   GetMyPodcastsOutput,
   GetFeedsOutput,
   GetFeedsInput,
+  GetPodcastListenersInput,
+  GetPodcastListenersOutput,
 } from "./dtos/podcast.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, ILike, Repository } from "typeorm";
@@ -374,6 +376,40 @@ export class PodcastsService {
         currentCount,
         currentPage: page,
         episodes,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async getPodcastListeners({
+    podcastId,
+    page,
+    pageSize,
+  }: GetPodcastListenersInput): Promise<GetPodcastListenersOutput> {
+    try {
+      const query = await this.userRepository
+        .createQueryBuilder("podcast")
+        .where("podcast.id = :id", { id: podcastId })
+        .leftJoinAndSelect("podcast.listeners", "listeners");
+
+      const totalCount = await query.getCount();
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const [listeners, currentCount] = await query
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .getManyAndCount();
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage: page,
+        listeners,
       };
     } catch (e) {
       return {

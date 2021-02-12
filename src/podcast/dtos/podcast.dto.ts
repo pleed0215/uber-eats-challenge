@@ -7,6 +7,7 @@ import {
 import { Podcast } from "../entities/podcast.entity";
 import { IsInt } from "class-validator";
 import { Episode } from "../entities/episode.entity";
+import { User } from "src/users/entities/user.entity";
 
 @InputType()
 export class GetAllPodcastsInput extends CorePaginationInput {}
@@ -104,4 +105,16 @@ export class GetEpisodesInput extends CorePaginationInput {
 export class GetEpisodesOutput extends CorePaginationOutput {
   @Field((type) => [Episode])
   episodes?: Episode[];
+}
+
+@InputType()
+export class GetPodcastListenersInput extends CorePaginationInput {
+  @Field((type) => Int)
+  podcastId: number;
+}
+
+@ObjectType()
+export class GetPodcastListenersOutput extends CorePaginationOutput {
+  @Field((type) => [User], { nullable: true })
+  listeners?: User[];
 }
